@@ -824,6 +824,7 @@
             "sendOnEnterDescription": "Send your message when pressing Enter.",
             "showTokensPerSecond": "Show tokens per second",
             "showTokensPerSecondDescription": "Display token throughput during generation.",
+            "streamUpdateInterval": "Streaming update interval (ms, 0 = every token)",
             "title": "Chat Window",
             "wideChat": "Wide chat mode",
             "wideChatDescription": "Use a wider layout for the chat window."
@@ -907,6 +908,8 @@
         "screen": {
             "keepAwake": "Keep Awake",
             "keepAwakeDescription": "Keeps app awake in foreground",
+            "reduceMotion": "Reduce Motion",
+            "reduceMotionDescription": "Turn off animations and screen transitions",
             "title": "Screen",
             "unlockOrientation": "Unlock Orientation",
             "unlockOrientationDescription": "Allows landscape on phones (App restart required)"

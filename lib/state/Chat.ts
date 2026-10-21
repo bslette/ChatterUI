@@ -3,6 +3,8 @@ import { randomUUID } from 'expo-crypto'
 import * as Notifications from 'expo-notifications'
 import { t } from 'i18next'
 import mime from 'mime/lite'
+import { useEffect, useState } from 'react'
+import { useMMKVNumber } from 'react-native-mmkv'
 import { create } from 'zustand'
 import { useShallow } from 'zustand/react/shallow'
 
@@ -25,7 +27,7 @@ import { convertToFormatInstruct } from '@lib/utils/TextFormat'
 
 import { Characters } from './Characters'
 import { Logger } from './Logger'
-import { AppSettings } from '../constants/GlobalValues'
+import { AppSettings, Global } from '../constants/GlobalValues'
 import { mmkv } from '../storage/MMKV'
 
 export interface ChatSwipeState extends ChatSwipe {
@@ -738,12 +740,40 @@ export namespace Chats {
         }
     }
 
+    /**
+     * The streamed output, re-rendered at most once per Global.StreamUpdateInterval ms
+     * (0 or unset: on every token). The store still takes every token; only how often
+     * the chat re-renders it changes. A cleared buffer and the first token show at once.
+     */
     export const useBuffer = () => {
-        const { buffer } = Chats.useChatState(
-            useShallow((state) => ({
-                buffer: state.buffer,
-            }))
-        )
+        const [interval = 0] = useMMKVNumber(Global.StreamUpdateInterval)
+        const [buffer, setBuffer] = useState(() => Chats.useChatState.getState().buffer)
+
+        useEffect(() => {
+            let timer: ReturnType<typeof setTimeout> | undefined
+            let last = 0
+            const publish = () => {
+                timer = undefined
+                last = Date.now()
+                setBuffer(Chats.useChatState.getState().buffer)
+            }
+            publish()
+            const unsubscribe = Chats.useChatState.subscribe((state, prev) => {
+                if (state.buffer === prev.buffer) return
+                const wait = last + interval - Date.now()
+                if (wait <= 0 || !state.buffer.data || !prev.buffer.data) {
+                    clearTimeout(timer)
+                    publish()
+                } else if (!timer) {
+                    timer = setTimeout(publish, wait)
+                }
+            })
+            return () => {
+                unsubscribe()
+                clearTimeout(timer)
+            }
+        }, [interval])
+
         return { buffer }
     }
 

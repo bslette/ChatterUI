@@ -1,11 +1,12 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { View } from 'react-native'
-import { useMMKVBoolean } from 'react-native-mmkv'
+import { useMMKVBoolean, useMMKVNumber } from 'react-native-mmkv'
 
+import ThemedSlider from '@components/input/ThemedSlider'
 import ThemedSwitch from '@components/input/ThemedSwitch'
 import SectionTitle from '@components/text/SectionTitle'
-import { AppSettings } from '@lib/constants/GlobalValues'
+import { AppSettings, Global } from '@lib/constants/GlobalValues'
 
 const ChatWindowSettings = () => {
     const { t } = useTranslation()
@@ -15,6 +16,7 @@ const ChatWindowSettings = () => {
     const [saveScroll, setSaveScroll] = useMMKVBoolean(AppSettings.SaveScrollPosition)
     const [alternate, setAlternate] = useMMKVBoolean(AppSettings.AlternatingChatMode)
     const [wide, setWide] = useMMKVBoolean(AppSettings.WideChatMode)
+    const [updateInterval, setUpdateInterval] = useMMKVNumber(Global.StreamUpdateInterval)
 
     const [showTokensPerSecond, setShowTokensPerSecond] = useMMKVBoolean(
         AppSettings.ShowTokenPerSecond
@@ -43,6 +45,15 @@ const ChatWindowSettings = () => {
                 value={showTokensPerSecond}
                 onChangeValue={setShowTokensPerSecond}
                 description={t('settings.chatwindow.showTokensPerSecondDescription')}
+            />
+
+            <ThemedSlider
+                label={t('settings.chatwindow.streamUpdateInterval')}
+                min={0}
+                max={1000}
+                step={50}
+                value={updateInterval ?? 0}
+                onValueChange={setUpdateInterval}
             />
 
             <ThemedSwitch

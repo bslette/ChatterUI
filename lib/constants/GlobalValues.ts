@@ -109,6 +109,9 @@ export const enum Global {
     CpuFeatures = 'cpufeatures',
     CPUThreads = 'constants-cpu-threads',
     InstallTextIntentDisable = 'install-text-intent-disable',
+
+    // Chat window: minimum ms between re-renders of streamed output (0 = every token)
+    StreamUpdateInterval = 'stream-update-interval',
 }
 
 export enum AppSettings {
@@ -143,6 +146,7 @@ export enum AppSettings {
     WideChatMode = 'settings-wide-chat-mode',
     AlternatingChatMode = 'settings-alternative-chat-mode',
     KeepAwake = 'settings-keep-awake',
+    ReduceMotion = 'settings-reduce-motion',
 }
 
 /**
@@ -180,6 +184,7 @@ export const AppSettingsDefault: Record<AppSettings, boolean> = {
     [AppSettings.WideChatMode]: false,
     [AppSettings.AlternatingChatMode]: false,
     [AppSettings.KeepAwake]: true,
+    [AppSettings.ReduceMotion]: false,
 }
 
 export const CLAUDE_VERSION = '2023-06-01'

@@ -9,6 +9,7 @@ import HeaderTitle from '@components/views/HeaderTitle'
 import { AppSettings } from '@lib/constants/GlobalValues'
 import { useDebounce } from '@lib/hooks/Debounce'
 import { useLiveQueryJoined } from '@lib/hooks/LiveQueryJoined'
+import { useReduceMotion } from '@lib/hooks/ReduceMotion'
 import { useAppMode } from '@lib/state/AppMode'
 import { useBackgroundStore } from '@lib/state/BackgroundImage'
 import { Characters } from '@lib/state/Characters'
@@ -35,6 +36,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, scrollData }) => {
     const [showModelname] = useMMKVBoolean(AppSettings.ShowModelInChat)
     const [showJump, setShowJump] = useState(false)
     const [autoScroll] = useMMKVBoolean(AppSettings.AutoScroll)
+    const reduceMotion = useReduceMotion()
     const { data: { background_image: backgroundImage } = {} } = useLiveQueryJoined(
         Characters.db.query.backgroundImageQuery(charId ?? -1),
         [charId],
@@ -134,13 +136,13 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, scrollData }) => {
                 onScrollToIndexFailed={(error) => {
                     flatlistRef.current?.scrollToOffset({
                         offset: error.averageItemLength * error.index,
-                        animated: true,
+                        animated: !reduceMotion,
                     })
                     setTimeout(() => {
                         if (entryIdList.length !== 0 && flatlistRef.current !== null) {
                             flatlistRef.current?.scrollToIndex({
                                 index: error.index,
-                                animated: true,
+                                animated: !reduceMotion,
                                 viewOffset: 32,
                             })
                         }

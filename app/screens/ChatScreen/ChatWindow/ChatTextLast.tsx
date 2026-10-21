@@ -6,6 +6,7 @@ import Markdown from 'react-native-markdown-display'
 import ThemedButton from '@components/buttons/ThemedButton'
 import AnimatedEllipsis from '@components/text/AnimatedEllipsis'
 import { ChatSwipe } from '@db/schema'
+import { useReduceMotion } from '@lib/hooks/ReduceMotion'
 import { useTextFilter } from '@lib/hooks/TextFilter'
 import { MarkdownStyle } from '@lib/markdown/Markdown'
 import { Chats, useInference } from '@lib/state/Chat'
@@ -26,8 +27,10 @@ const ChatTextLast: React.FC<ChatTextProps> = ({ nowGenerating, swipe }) => {
     const animHeight = useAnimatedValue(-1)
     const targetHeight = useRef(-1)
     const firstRender = useRef(true)
+    const reduceMotion = useReduceMotion()
 
     const updateHeight = useCallback(() => {
+        if (reduceMotion) return
         viewRef.current?.measure((_, __, ___, measuredHeight) => {
             if (firstRender.current) {
                 firstRender.current = false
@@ -51,7 +54,7 @@ const ChatTextLast: React.FC<ChatTextProps> = ({ nowGenerating, swipe }) => {
             )
             targetHeight.current = newHeight
         })
-    }, [animHeight, buffer.data, nowGenerating])
+    }, [animHeight, buffer.data, nowGenerating, reduceMotion])
 
     useEffect(() => {
         if (!nowGenerating && !firstRender.current) {
@@ -63,7 +66,8 @@ const ChatTextLast: React.FC<ChatTextProps> = ({ nowGenerating, swipe }) => {
     const renderedText = showHidden ? swipe.swipe : filteredText.result
 
     return (
-        <Animated.View style={{ overflow: 'scroll', height: animHeight }}>
+        <Animated.View
+            style={{ overflow: 'scroll', height: reduceMotion ? undefined : animHeight }}>
             <View style={{ minHeight: 10 }} ref={viewRef} onLayout={updateHeight}>
                 {swipe.id === currentSwipeId && nowGenerating && buffer.data === '' && (
                     <AnimatedEllipsis />

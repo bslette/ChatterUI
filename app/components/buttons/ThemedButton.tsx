@@ -12,6 +12,7 @@ import {
 } from 'react-native'
 
 import TText from '@components/text/TText'
+import { getReduceMotion } from '@lib/hooks/ReduceMotion'
 import { Theme } from '@lib/theme/ThemeManager'
 
 type ButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'critical' | 'disabled'
@@ -134,6 +135,7 @@ const ThemedButton: React.FC<ThemedButtonProps> = ({
     }
 
     const handlePressOut = () => {
+        if (getReduceMotion()) return animOpacity.setValue(1)
         Animated.timing(animOpacity, {
             toValue: 1,
             duration: 50,

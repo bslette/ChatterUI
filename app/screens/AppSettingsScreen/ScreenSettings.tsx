@@ -12,6 +12,7 @@ const ScreenSettings = () => {
     const { t } = useTranslation()
     const [unlockOrientation, setUnlockOrientation] = useMMKVBoolean(AppSettings.UnlockOrientation)
     const [keepAwake, setKeepAwake] = useMMKVBoolean(AppSettings.KeepAwake)
+    const [reduceMotion, setReduceMotion] = useMMKVBoolean(AppSettings.ReduceMotion)
     return (
         <View style={{ rowGap: 8 }}>
             <SectionTitle>{t('settings.screen.title')}</SectionTitle>
@@ -31,6 +32,13 @@ const ScreenSettings = () => {
                     if (value) KeepAwake.activateKeepAwakeAsync()
                     else KeepAwake.deactivateKeepAwake()
                 }}
+            />
+
+            <ThemedSwitch
+                label={t('settings.screen.reduceMotion')}
+                description={t('settings.screen.reduceMotionDescription')}
+                value={reduceMotion}
+                onChangeValue={setReduceMotion}
             />
         </View>
     )

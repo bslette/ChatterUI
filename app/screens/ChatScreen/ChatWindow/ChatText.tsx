@@ -4,6 +4,7 @@ import { Animated, Easing, useAnimatedValue, View } from 'react-native'
 import Markdown from 'react-native-markdown-display'
 
 import ThemedButton from '@components/buttons/ThemedButton'
+import { useReduceMotion } from '@lib/hooks/ReduceMotion'
 import { useTextFilter } from '@lib/hooks/TextFilter'
 import { MarkdownStyle } from '@lib/markdown/Markdown'
 
@@ -19,6 +20,7 @@ const ChatText: React.FC<ChatTextProps> = ({ swipeText }) => {
     const animHeight = useAnimatedValue(-1)
     const targetHeight = useRef(-1)
     const firstRender = useRef(true)
+    const reduceMotion = useReduceMotion()
 
     const handleAnimateHeight = (newheight: number) => {
         animHeight.stopAnimation(() =>
@@ -31,6 +33,7 @@ const ChatText: React.FC<ChatTextProps> = ({ swipeText }) => {
         )
     }
     const updateHeight = () => {
+        if (reduceMotion) return
         viewRef.current?.measure((_, __, ___, measuredHeight) => {
             if (firstRender.current) {
                 animHeight.setValue(measuredHeight)
@@ -46,7 +49,8 @@ const ChatText: React.FC<ChatTextProps> = ({ swipeText }) => {
     const filteredText = useTextFilter(swipeText?.trim() ?? '')
     const renderedText = showHidden ? swipeText?.trim() : filteredText.result
     return (
-        <Animated.View style={{ overflow: 'scroll', height: animHeight }}>
+        <Animated.View
+            style={{ overflow: 'scroll', height: reduceMotion ? undefined : animHeight }}>
             <View style={{ minHeight: 10 }} ref={viewRef} onLayout={updateHeight}>
                 <Markdown mergeStyle={false} markdownit={markdown} rules={rules} style={style}>
                     {renderedText}

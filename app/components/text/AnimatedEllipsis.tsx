@@ -11,6 +11,7 @@ import Animated, {
     withTiming,
 } from 'react-native-reanimated'
 
+import { useReduceMotion } from '@lib/hooks/ReduceMotion'
 import { Theme } from '@lib/theme/ThemeManager'
 
 const translateMax = -8
@@ -63,7 +64,14 @@ const Dot: React.FC<DotProps> = ({ offset }) => {
     )
 }
 
+const StillDot = () => {
+    const { color } = Theme.useTheme()
+    return <Octicons name="dot-fill" size={5} color={color.text._200} />
+}
+
 const AnimatedEllipsis = () => {
+    const reduceMotion = useReduceMotion()
+    const DotView = reduceMotion ? StillDot : Dot
     return (
         <View
             style={{
@@ -73,9 +81,9 @@ const AnimatedEllipsis = () => {
                 paddingHorizontal: 4,
                 columnGap: 8,
             }}>
-            <Dot offset={0} />
-            <Dot offset={150} />
-            <Dot offset={300} />
+            <DotView offset={0} />
+            <DotView offset={150} />
+            <DotView offset={300} />
         </View>
     )
 }
